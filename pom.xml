@@ -341,7 +341,7 @@
 		<dependency>
 			<groupId>io.probedock.test</groupId>
 			<artifactId>junitee-data-utils</artifactId>
-			<version>3.0.2</version>
+			<version>3.1.0</version>
 		</dependency>
 		
 		<dependency>

@@ -6,6 +6,7 @@
 		<goals>
 			<goal>clean</goal>
 			<goal>install</goal>
+			<goal>-U</goal>
 		</goals>
 	</action>
 	<action>

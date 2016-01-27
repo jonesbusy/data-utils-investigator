@@ -29,10 +29,11 @@ public class SomeTest {
 	public FinderManager finderManager;
 
 	public SomeTest() {
-		EntityManagerHolder holder = new EntityManagerHolder(Persistence.createEntityManagerFactory("DB01PU"));
 		
-		// Add extension
+		// Build entity manager holder
+		EntityManagerHolder holder = new EntityManagerHolder(Persistence.createEntityManagerFactory("DB01PU"));
 		holder.addFactory("DB02PU", Persistence.createEntityManagerFactory("DB02PU"));
+		holder.build();
 		
 		dataGeneratorManager = new DataGeneratorManager(holder);
 		finderManager = new FinderManager(holder);
