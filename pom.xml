@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>ch.delaye</groupId>
+	<artifactId>data-utils-investigator</artifactId>
+	<version>0.1-SNAPSHOT</version>
+	<name>Data Utils Investigator</name>
+	<packaging>jar</packaging>
+	
+	<inceptionYear>2016</inceptionYear>
+	
+	<scm>
+		<connection>git@github.com:jonesbusy/data-utils-investigator.git</connection>
+		<developerConnection>git@github.com:jonesbusy/data-utils-investigator.git</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
+		
+	<properties>
+        
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		
+		<build.package.skip>false</build.package.skip>
+		<derby.version>10.9.1.0</derby.version>
+		<eclipse.link.version>2.5.2</eclipse.link.version>
+				
+		
+		<!-- DB Commons -->
+		<db.driver>org.apache.derby.jdbc.ClientDriver</db.driver>
+		<db.port>1527</db.port>
+		<db.username>APP</db.username>
+		<db.password>APP</db.password>
+                
+		<!-- DB 01 -->
+		<db.01.name>DATA-UTILS-01</db.01.name>
+		<db.01.location>//localhost:${db.port}/${db.01.name}</db.01.location>
+                
+		<!-- DB 01 -->
+		<db.02.name>DATA-UTILS-02</db.02.name>
+		<db.02.location>//localhost:${db.port}/${db.02.name}</db.02.location>
+		
+	</properties>
+
+	<profiles>
+		
+		<profile>
+			
+			<id>populateData</id>
+			
+			<build>
+				
+				<plugins>
+					
+					<!-- Plugin to create the schema and tables -->
+					<plugin>
+						<groupId>io.github.divinespear</groupId>
+						<artifactId>jpa-schema-maven-plugin</artifactId>
+						<version>0.1.12</version>
+						<executions>
+							<!-- DB 01 -->
+							<execution>
+								<id>generate1</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>generate</goal>
+								</goals>
+								<configuration>
+									<databaseAction>drop-and-create</databaseAction>
+									<persistenceUnitName>DB01PU</persistenceUnitName>
+									<jdbcDriver>${db.driver}</jdbcDriver>
+									<jdbcUrl>jdbc:derby:${db.01.location};create=true</jdbcUrl>
+									<jdbcUser>${db.username}</jdbcUser>
+									<jdbcPassword>${db.password}</jdbcPassword>
+								</configuration>
+							</execution>
+                                                        
+							<!-- DB 02 -->
+							<execution>
+								<id>generate2</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>generate</goal>
+								</goals>
+								<configuration>
+									<databaseAction>drop-and-create</databaseAction>
+									<persistenceUnitName>DB02PU</persistenceUnitName>
+									<jdbcDriver>${db.driver}</jdbcDriver>
+									<jdbcUrl>jdbc:derby:${db.02.location};create=true</jdbcUrl>
+									<jdbcUser>${db.username}</jdbcUser>
+									<jdbcPassword>${db.password}</jdbcPassword>
+								</configuration>
+							</execution>
+						</executions>
+						<dependencies>
+							<dependency>
+								<groupId>org.apache.derby</groupId>
+								<artifactId>derby</artifactId>
+								<version>${derby.version}</version>
+							</dependency>
+							<dependency>
+								<groupId>org.apache.derby</groupId>
+								<artifactId>derbyclient</artifactId>
+								<version>${derby.version}</version>
+							</dependency>
+						</dependencies>
+					</plugin>
+					
+					<!-- Insert data into the DB -->
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>sql-maven-plugin</artifactId>
+						<version>1.5</version>
+						<executions>
+
+							<!-- DB 01 -->
+							<execution>
+								<id>sqlInsert1</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>execute</goal>
+								</goals>
+								<configuration>
+									<encoding>UTF-8</encoding>
+									<url>jdbc:derby:${db.01.location};create=false</url>
+									<srcFiles>
+										<srcFile>target/classes/insert1.sql</srcFile>
+									</srcFiles>
+									<skipOnConnectionError>false</skipOnConnectionError>
+								</configuration>
+							</execution>
+							<!-- DB 02 -->
+							<execution>
+								<id>sqlInsert2</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>execute</goal>
+								</goals>
+								<configuration>
+									<encoding>UTF-8</encoding>
+									<url>jdbc:derby:${db.02.location};create=false</url>
+									<srcFiles>
+										<srcFile>target/classes/insert2.sql</srcFile>
+									</srcFiles>
+									<skipOnConnectionError>false</skipOnConnectionError>
+								</configuration>
+							</execution>
+
+						</executions>
+						
+						<dependencies>
+							<dependency>
+								<groupId>org.apache.derby</groupId>
+								<artifactId>derby</artifactId>
+								<version>${derby.version}</version>
+							</dependency>
+							<dependency>
+								<groupId>org.apache.derby</groupId>
+								<artifactId>derbyclient</artifactId>
+								<version>${derby.version}</version>
+							</dependency>
+						</dependencies>
+
+						<configuration>
+							<driver>${db.driver}</driver>
+							<autocommit>true</autocommit>
+							<username>${db.username}</username>
+							<password>${db.password}</password>
+						</configuration>
+
+					</plugin>
+					
+				</plugins>
+				
+			</build>
+			
+		</profile>
+		
+	</profiles>
+
+	<build>
+		
+		<plugins>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clean-plugin</artifactId>
+				<configuration>
+					<filesets>
+						<fileset>
+							<directory>package</directory>
+							<followSymlinks>false</followSymlinks>
+						</fileset>
+					</filesets>
+				</configuration>
+				<version>2.6.1</version>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.3.2</version>
+				<configuration>
+					<mainClass>ch.delaye.data.utils.investigator.Main</mainClass>
+				</configuration>	
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.5.3</version>
+				<executions>
+					<execution>
+						<phase>install</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>package</outputDirectory>
+							<archive>
+								<manifest>
+									<addClasspath>true</addClasspath>
+									<mainClass>ch.delaye.data.utils.investigator.Main</mainClass>
+								</manifest>
+							</archive>
+
+							<descriptors>
+								<descriptor>dist.xml</descriptor>
+								<descriptor>service.xml</descriptor>
+							</descriptors>
+							<skipAssembly>${build.package.skip}</skipAssembly>
+						</configuration>					
+					</execution>
+				</executions>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.18.1</version>
+			</plugin>
+
+		</plugins>
+		
+		<resources>
+			<resource>
+				<directory>src/main/resources/scripts</directory>
+				<targetPath>scripts</targetPath>
+				<includes>
+					<include>*.sh</include>
+				</includes>
+				<filtering>true</filtering>
+			</resource>
+			
+			<resource>
+				<directory>src/main/resources</directory>
+				<targetPath>properties</targetPath>
+				<includes>
+					<include>*.properties</include>
+				</includes>
+				<filtering>true</filtering>
+			</resource>
+			
+			<resource>
+				<directory>src/main/resources/META-INF</directory>
+				<targetPath>META-INF</targetPath>
+				<includes>
+					<include>persistence.xml</include>
+				</includes>
+				<filtering>true</filtering>
+			</resource>
+			
+			<resource>
+				<directory>src/main/resources/sql</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>*.sql</include>
+				</includes>
+			</resource>
+			
+		</resources>
+		
+		<testResources>
+			<testResource>
+				<directory>src/main/resources/META-INF</directory>
+				<targetPath>target/test-classes/META-INF</targetPath>
+				<filtering>true</filtering>
+			</testResource>
+			<testResource>
+				<directory>src/test/resources</directory>
+				<filtering>true</filtering>
+			</testResource>
+		</testResources>
+				
+	</build>
+	
+	<dependencies>
+		
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.7.10</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>javax</groupId>
+			<artifactId>javaee-api</artifactId>
+			<version>7.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.eclipse.persistence</groupId>
+			<artifactId>eclipselink</artifactId>
+			<version>${eclipse.link.version}</version>
+		</dependency>
+				
+		<dependency>
+			<groupId>org.apache.derby</groupId>
+			<artifactId>derbyclient</artifactId>
+			<version>${derby.version}</version>
+		</dependency>	
+				
+		<dependency>
+			<groupId>org.apache.derby</groupId>
+			<artifactId>derby</artifactId>
+			<version>${derby.version}</version>
+		</dependency>
+
+		<!-- Test dependencies -->
+		<dependency>
+			<groupId>io.probedock.test</groupId>
+			<artifactId>junitee-data-utils</artifactId>
+			<version>3.0.2</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+		</dependency>
+				
+	</dependencies>
+
+</project>

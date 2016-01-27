@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+	<action>
+		<actionName>CUSTOM-Clean-and-build</actionName>
+		<displayName>Clean and build</displayName>
+		<goals>
+			<goal>clean</goal>
+			<goal>install</goal>
+		</goals>
+	</action>
+	<action>
+		<actionName>CUSTOM-Run</actionName>
+		<displayName>Run (Without schema gen)</displayName>
+		<goals>
+			<goal>clean</goal>
+			<goal>install</goal>
+			<goal>exec:java</goal>
+		</goals>
+	</action>
+	<action>
+		<actionName>CUSTOM-Run</actionName>
+		<displayName>Run (With schema gen)</displayName>
+		<goals>
+			<goal>clean</goal>
+			<goal>install</goal>
+			<goal>exec:java</goal>
+			<goal>-PpopulateData</goal>
+			<goal>-ssettings.xml</goal>
+		</goals>
+	</action>
+	<action>
+		<actionName>CUSTOM-Unit-Test</actionName>
+		<displayName>Run Tests</displayName>
+		<goals>
+			<goal>clean</goal>
+			<goal>install</goal>
+			<goal>-e</goal>
+			<goal>-Pnovaccess</goal>
+			<goal>-PnovaTest</goal>
+			<goal>-PnovaTestJunitUnit</goal>
+			<goal>-Pnexus</goal>
+			<goal>-ssettings.xml</goal>
+		</goals>
+	</action>
+</actions>

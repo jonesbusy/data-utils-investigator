@@ -1,0 +1,6 @@
+**/target
+**/package
+**/.jar
+*.lck
+*.log
+settings.xml
