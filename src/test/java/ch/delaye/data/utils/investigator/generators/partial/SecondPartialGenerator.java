@@ -16,7 +16,7 @@ public class SecondPartialGenerator {
 	
 	
 	public void generate() {
-		System.out.println("Generating first entity batches");
+		System.out.println("Generating second entity batches");
 		for(int i = 0 ; i < 10 ; i++) {
 			SecondEntity entity = new SecondEntity();
 			entity.setaSecondField("BAR " + i);
