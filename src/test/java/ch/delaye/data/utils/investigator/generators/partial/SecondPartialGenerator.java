@@ -1,9 +1,7 @@
 
 package ch.delaye.data.utils.investigator.generators.partial;
 
-import ch.delaye.data.utils.investigator.dao.IFirstEntityDao;
 import ch.delaye.data.utils.investigator.dao.ISecondEntityDao;
-import ch.delaye.data.utils.investigator.entities.FirstEntity;
 import ch.delaye.data.utils.investigator.entities.SecondEntity;
 import javax.ejb.EJB;
 
@@ -18,6 +16,7 @@ public class SecondPartialGenerator {
 	
 	
 	public void generate() {
+		System.out.println("Generating first entity batches");
 		for(int i = 0 ; i < 10 ; i++) {
 			SecondEntity entity = new SecondEntity();
 			entity.setaSecondField("BAR " + i);

@@ -15,6 +15,7 @@ public class FirstPartialGenerator {
 	private IFirstEntityDao firstEntityDao;
 	
 	public void generate() {
+		System.out.println("Generating first entity batches");
 		for(int i = 0 ; i < 10 ; i++) {
 			FirstEntity entity = new FirstEntity();
 			entity.setaFirstField("FOO " + i);
